@@ -79,22 +79,23 @@
   <section class="section card">
     <div class="section-head"><div><h2>Rozliczenie 800+</h2><div class="sub" id="benefitPeriodSubtitle">Wpisy dla wybranego okresu 10.–9.</div></div><span class="pill" id="benefitCount">0 wpisów</span></div>
     <div class="grid" style="margin-top:0">
-      <div class="card"><div class="metric-label">Suma 800+ w okresie</div><div class="metric-value" id="benefitTotal">0,00 zł</div><div class="metric-note">Suma wszystkich wpisów z wybranego okresu</div></div>
+      <div class="card"><div class="metric-label">Wydano z 800+</div><div class="metric-value" id="benefitTotal">0,00 zł</div><div class="metric-note">Suma wpisanych wydatków w tym okresie</div></div>
+      <div class="card"><div class="metric-label">Pozostało z 800+</div><div class="metric-value" id="benefitRemaining">800,00 zł</div><div class="metric-note" id="benefitRemainingNote">Do wykorzystania w tym okresie</div></div>
     </div>
     <form id="benefitForm" class="section">
       <div class="formgrid">
-        <div class="field"><label for="benefitDate">Data otrzymania / wpisu</label><input id="benefitDate" type="date" required></div>
+        <div class="field"><label for="benefitDate">Data wydatku</label><input id="benefitDate" type="date" required></div>
         <div class="field"><label for="benefitAmount">Kwota (zł)</label><input id="benefitAmount" type="number" min="0" step="0.01" inputmode="decimal" placeholder="np. 800,00" required></div>
-        <div class="field" style="grid-column:1/-1"><label for="benefitDescription">Opis (opcjonalnie)</label><input id="benefitDescription" type="text" maxlength="160" placeholder="np. 800+ za październik"></div>
+        <div class="field" style="grid-column:1/-1"><label for="benefitDescription">Opis (opcjonalnie)</label><input id="benefitDescription" type="text" maxlength="160" placeholder="np. ubrania, zajęcia, przybory szkolne"></div>
       </div>
       <div class="actions"><button class="btn btn-primary" id="benefitSubmit" type="submit">Dodaj wpis</button><button class="btn btn-secondary" id="benefitCancel" type="button">Anuluj edycję</button></div>
     </form>
   </section>
   <section class="section">
-    <div class="section-head"><div><h2>Historia 800+</h2><div class="sub">Tylko wpisy z aktualnie wybranego okresu</div></div></div>
+    <div class="section-head"><div><h2>Wydatki z 800+</h2><div class="sub">Tylko wpisy z aktualnie wybranego okresu</div></div></div>
     <div class="tablewrap"><table class="history"><thead><tr><th>Data</th><th>Opis</th><th class="money">Kwota</th><th class="row-actions">Akcje</th></tr></thead><tbody id="benefitHistoryBody"><tr><td colspan="4" class="empty">Brak wpisów w tym okresie.</td></tr></tbody></table></div>
   </section>
-  <div class="notice">Wpisy 800+ są rozliczane niezależnie od zwykłych wydatków i dochodów. Przełączanie okresu u góry ekranu zmienia również okres tej zakładki.</div>
+  <div class="notice">Wpisuj tutaj wydatki pokrywane ze świadczenia 800+. Aplikacja odejmuje je od 800 zł na każdy okres 10.–9. Wpisy pozostają oddzielone od zwykłych wydatków i nie zmieniają prognozy budżetu domowego. Przełączanie okresu u góry ekranu zmienia również okres tej zakładki.</div>
 </div>
 <div class="footer">Budżet domowy · okres rozliczeniowy 10.–9. · zapis lokalny</div>
 </div>
@@ -166,6 +167,9 @@ function render(){
    .sort((a,b)=>b.date.localeCompare(a.date)||b._index-a._index);
  const benefitTotal=benefits.reduce((sum,entry)=>sum+(Number(entry.amount)||0),0);
  $('benefitTotal').textContent=money(benefitTotal);
+ const benefitRemaining=800-benefitTotal;
+ $('benefitRemaining').textContent=money(Math.max(0,benefitRemaining));
+ $('benefitRemainingNote').textContent=benefitRemaining<0?`Przekroczono limit o ${money(Math.abs(benefitRemaining))}`:'Do wykorzystania w tym okresie';
  $('benefitCount').textContent=`${benefits.length} ${benefits.length===1?'wpis':'wpisów'}`;
  $('benefitDate').min=iso(start); $('benefitDate').max=iso(end);
  const benefitDate=$('benefitDate').value;
