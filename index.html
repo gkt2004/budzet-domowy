@@ -122,6 +122,10 @@
     <div class="section-head"><div><h2>Wszystkie raty do spłaty</h2><div class="sub">Możesz aktualizować saldo po każdej spłacie</div></div></div>
     <div class="tablewrap"><table class="history"><thead><tr><th>Zobowiązanie</th><th class="money">Kwota początkowa</th><th class="money">Pozostało do spłaty</th><th class="money">Rata / mies.</th><th>Spłacone raty</th><th>Dzień</th><th>Uwagi</th><th class="row-actions">Akcje</th></tr></thead><tbody id="loanHistoryBody"><tr><td colspan="8" class="empty">Nie dodano jeszcze żadnych rat.</td></tr></tbody></table></div>
   </section>
+  <section class="section">
+    <div class="section-head"><div><h2>Najbliższe raty</h2><div class="sub">Najbliższy termin płatności dla każdego zobowiązania</div></div></div>
+    <div class="tablewrap"><table class="history"><thead><tr><th>Termin</th><th>Zobowiązanie</th><th class="money">Kwota raty</th><th class="money">Pozostało do spłaty</th><th class="row-actions">Akcja</th></tr></thead><tbody id="upcomingLoansBody"><tr><td colspan="5" class="empty">Brak rat z ustawionym dniem płatności.</td></tr></tbody></table></div>
+  </section>
   <div class="notice">Dane rat są zapisywane lokalnie i uwzględniane w kopii zapasowej. Kwota pozostała do spłaty jest liczona jako kwota początkowa minus suma spłaconych rat. Po opłaceniu raty użyj przycisku „Spłacono ratę”.</div>
 </div>
 <div class="footer">Budżet domowy · okres rozliczeniowy 10.–9. · zapis lokalny</div>
@@ -248,14 +252,29 @@ let editingLoanId=null;
 function loanOriginal(x){if(x.originalAmount!==undefined)return Number(x.originalAmount)||0;return (Number(x.balance)||0)+(Number(x.paidCount)||0)*(Number(x.payment)||0);}
 function loanPaidCount(x){return Math.max(0,Math.floor(Number(x.paidCount)||0));}
 function loanBalance(x){return Math.max(0,Math.round((loanOriginal(x)-loanPaidCount(x)*(Number(x.payment)||0))*100)/100);}
+function nextLoanDueDate(x){
+ if(!x.dueDay)return null;
+ const now=new Date(); now.setHours(0,0,0,0);
+ for(let add=0;add<24;add++){
+   const first=new Date(now.getFullYear(),now.getMonth()+add,1);
+   const day=Math.min(Number(x.dueDay),new Date(first.getFullYear(),first.getMonth()+1,0).getDate());
+   const due=new Date(first.getFullYear(),first.getMonth(),day,12);
+   if(due>=now)return due;
+ }
+ return null;
+}
 function renderLoans(){
  const loans=(state.loans||[]);
  $('loanDebtTotal').textContent=money(loans.reduce((s,x)=>s+loanBalance(x),0));
  $('loanMonthlyTotal').textContent=money(loans.reduce((s,x)=>s+(Number(x.payment)||0),0));
  $('loanCount').textContent=String(loans.length);
  const body=$('loanHistoryBody');
- if(!loans.length){body.innerHTML='<tr><td colspan="8" class="empty">Nie dodano jeszcze żadnych rat.</td></tr>';return}
- body.innerHTML=loans.map((x,i)=>`<tr><td>${escapeHTML(x.name)}</td><td class="money">${money(loanOriginal(x))}</td><td class="money">${money(loanBalance(x))}</td><td class="money">${money(x.payment)}</td><td>${loanPaidCount(x)}</td><td>${x.dueDay?escapeHTML(x.dueDay):'—'}</td><td>${escapeHTML(x.note||'—')}</td><td class="row-actions"><button class="iconbtn" data-loan-paid="${i}" ${loanBalance(x)<=0?'disabled':''}>Spłacono ratę</button><button class="iconbtn" data-loan-edit="${i}">Edytuj</button><button class="iconbtn" data-loan-delete="${i}">×</button></td></tr>`).join('');
+ if(!loans.length){body.innerHTML='<tr><td colspan="8" class="empty">Nie dodano jeszcze żadnych rat.</td></tr>'}
+ else body.innerHTML=loans.map((x,i)=>`<tr><td>${escapeHTML(x.name)}</td><td class="money">${money(loanOriginal(x))}</td><td class="money">${money(loanBalance(x))}</td><td class="money">${money(x.payment)}</td><td>${loanPaidCount(x)}</td><td>${x.dueDay?escapeHTML(x.dueDay):'—'}</td><td>${escapeHTML(x.note||'—')}</td><td class="row-actions"><button class="iconbtn" data-loan-paid="${i}" ${loanBalance(x)<=0?'disabled':''}>Spłacono ratę</button><button class="iconbtn" data-loan-edit="${i}">Edytuj</button><button class="iconbtn" data-loan-delete="${i}">×</button></td></tr>`).join('');
+ const upcoming=$('upcomingLoansBody');
+ const items=loans.map((x,i)=>({x,i,due:nextLoanDueDate(x)})).filter(v=>v.due&&loanBalance(v.x)>0).sort((a,b)=>a.due-b.due);
+ if(!items.length) upcoming.innerHTML='<tr><td colspan="5" class="empty">Brak rat z ustawionym dniem płatności. Ustaw dzień w edycji zobowiązania.</td></tr>';
+ else upcoming.innerHTML=items.map(({x,i,due})=>`<tr><td>${fmtDate(due)}</td><td>${escapeHTML(x.name)}</td><td class="money">${money(x.payment)}</td><td class="money">${money(loanBalance(x))}</td><td class="row-actions"><button class="iconbtn" data-upcoming-paid="${i}">Oznacz jako spłaconą</button></td></tr>`).join('');
 }
 $('loanForm').addEventListener('submit',e=>{
  e.preventDefault();
@@ -272,6 +291,12 @@ $('loanHistoryBody').addEventListener('click',e=>{
  if(paid){const i=Number(paid.dataset.loanPaid),x=state.loans[i];if(x&&loanBalance(x)>0){x.originalAmount=loanOriginal(x);x.paidCount=loanPaidCount(x)+1;saveState();renderLoans();}return;}
  if(edit){editingLoanId=Number(edit.dataset.loanEdit);const x=state.loans[editingLoanId];if(!x)return;$('loanName').value=x.name;$('loanOriginal').value=loanOriginal(x);$('loanPayment').value=x.payment;$('loanPaidCount').value=loanPaidCount(x);$('loanDueDay').value=x.dueDay||'';$('loanNote').value=x.note||'';$('loanSubmit').textContent='Zapisz zmiany';window.scrollTo({top:$('loanForm').getBoundingClientRect().top+window.scrollY-20,behavior:'smooth'});}
  if(del){const i=Number(del.dataset.loanDelete),x=state.loans[i];if(x&&confirm(`Usunąć zobowiązanie „${x.name}”?`)){state.loans.splice(i,1);if(editingLoanId===i)editingLoanId=null;saveState();renderLoans();}}
+});
+$('upcomingLoansBody').addEventListener('click',e=>{
+ const btn=e.target.closest('[data-upcoming-paid]');
+ if(!btn)return;
+ const i=Number(btn.dataset.upcomingPaid),x=state.loans[i];
+ if(x&&loanBalance(x)>0){x.originalAmount=loanOriginal(x);x.paidCount=loanPaidCount(x)+1;saveState();renderLoans();}
 });
 if('serviceWorker' in navigator && location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 render();
