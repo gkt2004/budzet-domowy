@@ -136,11 +136,23 @@
 const $ = id => document.getElementById(id);
 const STORE = 'budzet-domowy-v1';
 let state = loadState();
+if(!state || typeof state !== 'object') state={periods:{}};
+if(!state.periods || typeof state.periods !== 'object') state.periods={};
 if(!Array.isArray(state.loans)) state.loans=[];
 state.loans.forEach(x=>{if(x.originalAmount===undefined)x.originalAmount=Math.round(((Number(x.balance)||0)+(Number(x.paidCount)||0)*(Number(x.payment)||0))*100)/100;});
-if(!Array.isArray(state.loans)) state.loans=[];
 let offset = 0;
-function loadState(){try{return JSON.parse(localStorage.getItem(STORE))||{periods:{}}}catch(e){return {periods:{}}}}
+function loadState(){
+ try{
+  const raw=localStorage.getItem(STORE);
+  if(raw){const parsed=JSON.parse(raw);if(parsed&&typeof parsed==='object')return parsed;}
+  // Look for legacy copies created by earlier app builds before ever initializing empty state.
+  for(const key of ['budzet-domowy-v1-backup','budzet-domowy-v0','budzet-domowy']) {
+   const legacy=localStorage.getItem(key);
+   if(legacy){const parsed=JSON.parse(legacy);if(parsed&&typeof parsed==='object'&&parsed.periods)return parsed;}
+  }
+  return {periods:{}};
+ }catch(e){console.error('Nie udało się odczytać zapisanych danych budżetu:',e);return {periods:{}}}
+}
 function saveState(){localStorage.setItem(STORE,JSON.stringify(state))}
 function money(n){return new Intl.NumberFormat('pl-PL',{style:'currency',currency:'PLN'}).format(Number(n)||0)}
 function escapeHTML(value){return String(value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}
@@ -258,9 +270,10 @@ function dateAddMonths(isoDate,months){
  const last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();d.setDate(Math.min(day,last));return iso(d);
 }
 function dateLabel(s){return parseISO(s).toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'})}
+function loanRemaining(x){return Math.max(0,Math.round(((Number(x.originalAmount??x.balance)||0)-(Number(x.paidCount)||0)*(Number(x.payment)||0))*100)/100);}
 function renderLoans(){
  const loans=state.loans||[];
- const remaining=x=>Math.max(0,Math.round(((Number(x.originalAmount??x.balance)||0)-(Number(x.paidCount)||0)*(Number(x.payment)||0))*100)/100);
+ const remaining=loanRemaining;
  $('loanDebtTotal').textContent=money(loans.reduce((sum,x)=>sum+remaining(x),0));
  $('loanMonthlyTotal').textContent=money(loans.filter(x=>remaining(x)>0).reduce((sum,x)=>sum+(Number(x.payment)||0),0));
  $('loanCount').textContent=String(loans.filter(x=>remaining(x)>0).length);
