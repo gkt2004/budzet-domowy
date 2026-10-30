@@ -164,13 +164,13 @@ function currentPeriod(){const now=new Date();const base=periodFor(now).start;re
 function currentKey(){const s=currentPeriod();return `${s.getFullYear()}-${String(s.getMonth()+1).padStart(2,'0')}`}
 function getPeriodData(key){if(!state.periods[key])state.periods[key]={income1:0,income2:0,expenses:{},benefitEntries:[]};if(!state.periods[key].benefitEntries)state.periods[key].benefitEntries=[];return state.periods[key]}
 function fmtDate(d){return new Intl.DateTimeFormat('pl-PL',{day:'2-digit',month:'2-digit',year:'numeric'}).format(d)}
-function dateLabel(d){return new Intl.DateTimeFormat('pl-PL',{month:'long',year:'numeric'}).format(d)}
+function periodDateLabel(d){return new Intl.DateTimeFormat('pl-PL',{month:'long',year:'numeric'}).format(d)}
 function daysBetween(a,b){return Math.round((new Date(b.getFullYear(),b.getMonth(),b.getDate())-new Date(a.getFullYear(),a.getMonth(),a.getDate()))/86400000)+1}
 function periodDays(start,end){return daysBetween(start,end)}
 function render(){
  const start=currentPeriod(),end=new Date(start.getFullYear(),start.getMonth()+1,9,12),key=currentKey(),p=getPeriodData(key);
  const nextMonth=new Date(start.getFullYear(),start.getMonth()+1,1,12);
- $('periodTitle').textContent=`${dateLabel(start)} / ${dateLabel(nextMonth)}`;
+ $('periodTitle').textContent=`${periodDateLabel(start)} / ${periodDateLabel(nextMonth)}`;
  $('periodDates').textContent=`${fmtDate(start)} – ${fmtDate(end)}`;
  $('historySubtitle').textContent=`Okres ${fmtDate(start)} – ${fmtDate(end)}`;
  $('income1').value=p.income1||''; $('income2').value=p.income2||'';
@@ -237,10 +237,6 @@ function showTab(which){
  const isBenefit=which==='benefit', isLoans=which==='loans';
  $('budgetTab').classList.toggle('hidden',isBenefit||isLoans);
  $('benefitTab').classList.toggle('hidden',!isBenefit);
- $('loansTab').classList.toggle('hidden',!isLoans);
- $('budgetTabBtn').classList.toggle('active',!isBenefit&&!isLoans);
- $('benefitTabBtn').classList.toggle('active',isBenefit);
- $('loansTabBtn').classList.toggle('active',isLoans);
 }
 $('budgetTabBtn').addEventListener('click',()=>showTab('budget'));
 $('benefitTabBtn').addEventListener('click',()=>showTab('benefit'));
