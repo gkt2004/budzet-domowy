@@ -28,5 +28,3 @@ Dane są lokalne dla przeglądarki/urządzenia. Nie są automatycznie synchroniz
 
 
 Nowa funkcja: zakładka „Rozliczenie 800+” pozwala dodawać wpisy z datą, kwotą i opcjonalnym opisem. Wpisy są rozdzielone według okresu 10.–9., można je edytować i usuwać; suma jest liczona osobno od budżetu domowego.
-
-Aktualizacja rat: wpisuj pierwotną kwotę zobowiązania. Pozostałe zadłużenie wylicza się jako pierwotna kwota minus kwota rat pomnożona przez liczbę spłaconych rat.

@@ -12,7 +12,6 @@
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}button,input{font:inherit}button{cursor:pointer}.app{max-width:850px;margin:auto;padding:18px 14px 40px}.top{background:linear-gradient(135deg,#173f35,#286653);color:#fff;padding:22px;border-radius:22px;box-shadow:var(--shadow)}.topline{display:flex;justify-content:space-between;gap:10px;align-items:center}.brand{font-size:12px;letter-spacing:1.8px;text-transform:uppercase;opacity:.8}.top h1{font-size:25px;margin:6px 0 16px}.period{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#ffffff16;border:1px solid #ffffff2a;border-radius:14px;padding:8px}.period button{border:0;background:#ffffff1a;color:#fff;border-radius:10px;width:38px;height:38px;font-size:22px}.period-label{text-align:center;flex:1;font-weight:650}.period small{display:block;font-weight:400;font-size:12px;opacity:.8;margin-top:3px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow);min-width:0}.metric-label{color:var(--muted);font-size:12px;margin-bottom:8px}.metric-value{font-size:clamp(20px,5vw,27px);font-weight:750;letter-spacing:-.7px;overflow-wrap:anywhere}.metric-note{color:var(--muted);font-size:12px;margin-top:6px}.accent{border-top:3px solid var(--gold)}.section{margin-top:22px}.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 2px 10px}.section h2{font-size:18px;margin:0}.sub{font-size:12px;color:var(--muted);margin-top:4px}.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field label{display:block;font-size:13px;font-weight:650;margin-bottom:7px}.field input{width:100%;border:1px solid #d7e0d9;background:#fbfcfb;border-radius:12px;padding:13px 12px;color:var(--ink);outline:none}.field input:focus{border-color:var(--green2);box-shadow:0 0 0 3px #28665318}.btn{border:0;border-radius:12px;padding:12px 15px;font-weight:700}.btn-primary{background:var(--green);color:#fff}.btn-secondary{background:#e9f0eb;color:var(--green)}.btn-danger{background:#fff0f0;color:var(--red)}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.dayform{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end}.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:#fff}.history{width:100%;border-collapse:collapse;min-width:290px}.history th,.history td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);font-size:14px}.history th{font-size:12px;color:var(--muted);font-weight:650;background:#fafcf9}.history tr:last-child td{border-bottom:0}.money{text-align:right!important;font-variant-numeric:tabular-nums;white-space:nowrap}.row-actions{text-align:right!important;white-space:nowrap}.iconbtn{border:0;background:#edf3ee;color:var(--green);border-radius:8px;padding:7px 9px;margin-left:4px}.empty{text-align:center;color:var(--muted);padding:24px}.progress{height:8px;border-radius:20px;background:#e5ebe6;overflow:hidden;margin-top:10px}.progress span{display:block;height:100%;background:var(--gold);width:0%}.notice{font-size:12px;line-height:1.5;color:var(--muted);margin-top:10px}.footer{font-size:12px;text-align:center;color:var(--muted);margin-top:25px}.hidden{display:none!important}.totalbar{display:flex;justify-content:space-between;gap:12px;padding-top:12px;font-weight:750}.tabs{display:flex;gap:8px;margin:14px 0 4px}.tabbtn{flex:1;border:1px solid var(--line);background:#fff;color:var(--green);padding:12px;border-radius:12px;font-weight:750}.tabbtn.active{background:var(--green);color:#fff;border-color:var(--green)}.pill{display:inline-block;padding:5px 8px;border-radius:20px;background:#e9f0eb;color:var(--green);font-size:11px;font-weight:700}
 @media(min-width:650px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.grid .wide{grid-column:span 2}.top h1{font-size:30px}}
 @media(max-width:430px){.app{padding:12px 10px 30px}.top{padding:18px}.top h1{font-size:23px}.formgrid{grid-template-columns:1fr}.dayform{grid-template-columns:1fr 1fr}.dayform .field:first-child{grid-column:span 2}.dayform button{grid-column:span 2}.metric-value{font-size:22px}}
-.loan-calendar{display:grid;gap:10px}.loan-date-group{border:1px solid var(--line);border-radius:14px;padding:12px}.loan-date-head{font-weight:700;margin-bottom:8px}.loan-event{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line)}.loan-event:first-of-type{border-top:0}.loan-event label{display:flex;align-items:center;gap:8px;cursor:pointer}.loan-event input{width:20px;height:20px;accent-color:var(--green)}.loan-event small{display:block;color:var(--muted)}.loan-event .event-amount{font-weight:750;white-space:nowrap}.loan-progress{height:7px;background:var(--line);border-radius:9px;overflow:hidden;min-width:65px}.loan-progress span{display:block;height:100%;background:var(--green2)}@media(max-width:600px){.loan-event{align-items:flex-start}.loan-event .event-amount{font-size:13px}.loan-calendar{gap:8px}}
 </style>
 </head>
 <body>
@@ -101,34 +100,28 @@
 </div>
 <div id="loansTab" class="hidden">
   <section class="section grid" style="margin-top:14px">
-    <div class="card"><div class="metric-label">Pozostało do spłaty łącznie</div><div class="metric-value" id="loanDebtTotal">0,00 zł</div></div>
-    <div class="card"><div class="metric-label">Miesięczne raty łącznie</div><div class="metric-value" id="loanMonthlyTotal">0,00 zł</div></div>
-    <div class="card"><div class="metric-label">Zobowiązania</div><div class="metric-value" id="loanCount">0</div></div>
+    <div class="card"><div class="metric-label">Pozostało do spłaty łącznie</div><div class="metric-value" id="loanDebtTotal">0,00 zł</div><div class="metric-note">Suma sald wszystkich aktywnych rat</div></div>
+    <div class="card"><div class="metric-label">Miesięczne raty łącznie</div><div class="metric-value" id="loanMonthlyTotal">0,00 zł</div><div class="metric-note">Suma regularnych płatności</div></div>
+    <div class="card"><div class="metric-label">Liczba zobowiązań</div><div class="metric-value" id="loanCount">0</div><div class="metric-note">Zapisane pożyczki, kredyty i zakupy na raty</div></div>
   </section>
   <section class="section card">
-    <div class="section-head"><div><h2>Dodaj zobowiązanie</h2><div class="sub">Wpisz pierwotną kwotę zobowiązania i harmonogram spłat</div></div></div>
+    <div class="section-head"><div><h2>Dodaj ratę / zobowiązanie</h2><div class="sub">Wpisz aktualną kwotę pozostałą do spłaty</div></div></div>
     <form id="loanForm">
       <div class="formgrid">
-        <div class="field"><label for="loanName">Nazwa raty / zobowiązania</label><input id="loanName" type="text" maxlength="100" placeholder="np. telewizor, kredyt, telefon" required></div>
-        <div class="field"><label for="loanBalance">Pierwotna kwota zobowiązania (zł)</label><input id="loanBalance" type="number" min="0" step="0.01" inputmode="decimal" required></div>
-        <div class="field"><label for="loanPayment">Kwota jednej raty (zł)</label><input id="loanPayment" type="number" min="0.01" step="0.01" inputmode="decimal" required></div>
-        <div class="field"><label for="loanPaidCount">Ile rat już spłacono? (opcjonalnie)</label><input id="loanPaidCount" type="number" min="0" step="1" placeholder="np. 5"></div>
-        <div class="field"><label for="loanTotalCount">Łączna liczba rat (opcjonalnie)</label><input id="loanTotalCount" type="number" min="1" step="1" placeholder="np. 24"></div>
-        <div class="field"><label for="loanFirstDue">Data najbliższej raty</label><input id="loanFirstDue" type="date" required></div>
+        <div class="field"><label for="loanName">Nazwa zobowiązania</label><input id="loanName" type="text" maxlength="100" placeholder="np. telewizor, kredyt, telefon" required></div>
+        <div class="field"><label for="loanBalance">Pozostało do spłaty (zł)</label><input id="loanBalance" type="number" min="0" step="0.01" inputmode="decimal" placeholder="np. 2400,00" required></div>
+        <div class="field"><label for="loanPayment">Miesięczna rata (zł)</label><input id="loanPayment" type="number" min="0" step="0.01" inputmode="decimal" placeholder="np. 250,00" required></div>
+        <div class="field"><label for="loanDueDay">Dzień płatności (opcjonalnie)</label><input id="loanDueDay" type="number" min="1" max="31" step="1" placeholder="np. 15"></div>
         <div class="field" style="grid-column:1/-1"><label for="loanNote">Uwagi (opcjonalnie)</label><input id="loanNote" type="text" maxlength="200" placeholder="np. ostatnia rata w czerwcu 2027"></div>
       </div>
       <div class="actions"><button class="btn btn-primary" id="loanSubmit" type="submit">Dodaj zobowiązanie</button><button class="btn btn-secondary" id="loanCancel" type="button">Anuluj edycję</button></div>
     </form>
   </section>
-  <section class="section card">
-    <div class="section-head"><div><h2>Kalendarz najbliższych rat</h2><div class="sub">Zaznacz „Spłacono”, aby odjąć ratę od salda i zwiększyć liczbę spłaconych rat.</div></div></div>
-    <div id="loanCalendar" class="loan-calendar"><div class="empty">Dodaj zobowiązanie, aby zobaczyć terminy.</div></div>
-  </section>
   <section class="section">
-    <div class="section-head"><div><h2>Wszystkie zobowiązania</h2><div class="sub">Saldo i liczba spłaconych rat aktualizują się po oznaczeniu raty jako spłaconej.</div></div></div>
-    <div class="tablewrap"><table class="history"><thead><tr><th>Nazwa</th><th class="money">Rata</th><th class="money">Spłacono</th><th class="money">Pozostało</th><th>Postęp</th><th>Akcje</th></tr></thead><tbody id="loanHistoryBody"><tr><td colspan="6" class="empty">Nie dodano jeszcze żadnych zobowiązań.</td></tr></tbody></table></div>
+    <div class="section-head"><div><h2>Wszystkie raty do spłaty</h2><div class="sub">Możesz aktualizować saldo po każdej spłacie</div></div></div>
+    <div class="tablewrap"><table class="history"><thead><tr><th>Zobowiązanie</th><th class="money">Pozostało</th><th class="money">Rata / mies.</th><th>Dzień</th><th>Uwagi</th><th class="row-actions">Akcje</th></tr></thead><tbody id="loanHistoryBody"><tr><td colspan="6" class="empty">Nie dodano jeszcze żadnych rat.</td></tr></tbody></table></div>
   </section>
-  <div class="notice">Oznaczenie raty jako spłaconej zmniejsza saldo o kwotę raty i zwiększa licznik spłaconych rat. Aplikacja nie pobiera pieniędzy z konta ani nie zmienia budżetu domowego. Dane są zapisywane lokalnie i trafiają do kopii zapasowej.</div>
+  <div class="notice">Dane rat są zapisywane lokalnie w tej aplikacji i uwzględniane w kopii zapasowej. To rejestr zobowiązań — spłaty nie są automatycznie odejmowane od budżetu ani od salda rat. Po spłacie zaktualizuj pole „Pozostało do spłaty” albo usuń zobowiązanie.</div>
 </div>
 <div class="footer">Budżet domowy · okres rozliczeniowy 10.–9. · zapis lokalny</div>
 </div>
@@ -136,27 +129,10 @@
 const $ = id => document.getElementById(id);
 const STORE = 'budzet-domowy-v1';
 let state = loadState();
-if(!state || typeof state !== 'object') state={periods:{}};
-if(!state.periods || typeof state.periods !== 'object') state.periods={};
 if(!Array.isArray(state.loans)) state.loans=[];
-state.loans.forEach(x=>{if(x.originalAmount===undefined)x.originalAmount=Math.round(((Number(x.balance)||0)+(Number(x.paidCount)||0)*(Number(x.payment)||0))*100)/100;});
 let offset = 0;
-function loadState(){
- try{
-  const raw=localStorage.getItem(STORE);
-  if(raw){const parsed=JSON.parse(raw);if(parsed&&typeof parsed==='object')return parsed;}
-  // Look for legacy copies created by earlier app builds before ever initializing empty state.
-  for(const key of ['budzet-domowy-v1-backup','budzet-domowy-v0','budzet-domowy']) {
-   const legacy=localStorage.getItem(key);
-   if(legacy){const parsed=JSON.parse(legacy);if(parsed&&typeof parsed==='object'&&parsed.periods)return parsed;}
-  }
-  return {periods:{}};
- }catch(e){console.error('Nie udało się odczytać zapisanych danych budżetu:',e);return {periods:{}}}
-}
-function saveState(){
- try { localStorage.setItem(STORE, JSON.stringify(state)); return true; }
- catch (err) { console.error('Błąd zapisu danych:', err); alert('Nie udało się zapisać danych w pamięci przeglądarki. Sprawdź konsolę F12 → Console. Dane nie zostały potwierdzone jako zapisane.'); return false; }
-}
+function loadState(){try{return JSON.parse(localStorage.getItem(STORE))||{periods:{}}}catch(e){return {periods:{}}}}
+function saveState(){localStorage.setItem(STORE,JSON.stringify(state))}
 function money(n){return new Intl.NumberFormat('pl-PL',{style:'currency',currency:'PLN'}).format(Number(n)||0)}
 function escapeHTML(value){return String(value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}
 function iso(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
@@ -167,13 +143,13 @@ function currentPeriod(){const now=new Date();const base=periodFor(now).start;re
 function currentKey(){const s=currentPeriod();return `${s.getFullYear()}-${String(s.getMonth()+1).padStart(2,'0')}`}
 function getPeriodData(key){if(!state.periods[key])state.periods[key]={income1:0,income2:0,expenses:{},benefitEntries:[]};if(!state.periods[key].benefitEntries)state.periods[key].benefitEntries=[];return state.periods[key]}
 function fmtDate(d){return new Intl.DateTimeFormat('pl-PL',{day:'2-digit',month:'2-digit',year:'numeric'}).format(d)}
-function periodDateLabel(d){return new Intl.DateTimeFormat('pl-PL',{month:'long',year:'numeric'}).format(d)}
+function dateLabel(d){return new Intl.DateTimeFormat('pl-PL',{month:'long',year:'numeric'}).format(d)}
 function daysBetween(a,b){return Math.round((new Date(b.getFullYear(),b.getMonth(),b.getDate())-new Date(a.getFullYear(),a.getMonth(),a.getDate()))/86400000)+1}
 function periodDays(start,end){return daysBetween(start,end)}
 function render(){
  const start=currentPeriod(),end=new Date(start.getFullYear(),start.getMonth()+1,9,12),key=currentKey(),p=getPeriodData(key);
  const nextMonth=new Date(start.getFullYear(),start.getMonth()+1,1,12);
- $('periodTitle').textContent=`${periodDateLabel(start)} / ${periodDateLabel(nextMonth)}`;
+ $('periodTitle').textContent=`${dateLabel(start)} / ${dateLabel(nextMonth)}`;
  $('periodDates').textContent=`${fmtDate(start)} – ${fmtDate(end)}`;
  $('historySubtitle').textContent=`Okres ${fmtDate(start)} – ${fmtDate(end)}`;
  $('income1').value=p.income1||''; $('income2').value=p.income2||'';
@@ -231,8 +207,8 @@ function render(){
 }
 $('prevPeriod').addEventListener('click',()=>{offset--;render()});
 $('nextPeriod').addEventListener('click',()=>{offset++;render()});
-$('incomeForm').addEventListener('submit',e=>{e.preventDefault();const p=getPeriodData(currentKey());p.income1=Math.max(0,Number($('income1').value)||0);p.income2=Math.max(0,Number($('income2').value)||0);if(saveState())render()});
-$('expenseForm').addEventListener('submit',e=>{e.preventDefault();const date=$('expenseDate').value,amount=Number($('expenseAmount').value);const start=currentPeriod(),end=new Date(start.getFullYear(),start.getMonth()+1,9,12);if(!date||date<iso(start)||date>iso(end)){alert('Wybierz datę z aktualnie wybranego okresu.');return}if(!Number.isFinite(amount)||amount<0){alert('Wpisz poprawną kwotę.');return}const p=getPeriodData(currentKey());p.expenses[date]=Math.round(amount*100)/100;if(saveState())render()});
+$('incomeForm').addEventListener('submit',e=>{e.preventDefault();const p=getPeriodData(currentKey());p.income1=Math.max(0,Number($('income1').value)||0);p.income2=Math.max(0,Number($('income2').value)||0);saveState();render()});
+$('expenseForm').addEventListener('submit',e=>{e.preventDefault();const date=$('expenseDate').value,amount=Number($('expenseAmount').value);const start=currentPeriod(),end=new Date(start.getFullYear(),start.getMonth()+1,9,12);if(!date||date<iso(start)||date>iso(end)){alert('Wybierz datę z aktualnie wybranego okresu.');return}if(!Number.isFinite(amount)||amount<0){alert('Wpisz poprawną kwotę.');return}const p=getPeriodData(currentKey());p.expenses[date]=Math.round(amount*100)/100;saveState();render()});
 $('historyBody').addEventListener('click',e=>{const edit=e.target.closest('[data-edit]'),del=e.target.closest('[data-delete]');const p=getPeriodData(currentKey());if(edit){const d=edit.dataset.edit;$('expenseDate').value=d;$('expenseAmount').value=p.expenses[d];$('expenseAmount').focus();$('expenseSubmit').textContent='Zapisz zmianę';window.scrollTo({top:$('expenseForm').getBoundingClientRect().top+window.scrollY-20,behavior:'smooth'})}if(del){const d=del.dataset.delete;if(confirm(`Usunąć wpis z ${fmtDate(parseISO(d))}?`)){delete p.expenses[d];saveState();render()}}});
 $('exportBtn').addEventListener('click',()=>{const blob=new Blob([JSON.stringify({format:'budzet-domowy-v1',exportedAt:new Date().toISOString(),data:state},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`budzet-domowy-kopia-${iso(new Date())}.json`;a.click();URL.revokeObjectURL(a.href)});
 $('importFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const obj=JSON.parse(await f.text());const incoming=obj.data||obj;if(!incoming.periods||typeof incoming.periods!=='object')throw new Error('bad');if(confirm('Import zastąpi obecne dane w tej aplikacji. Kontynuować?')){state=incoming;saveState();offset=0;render();alert('Kopia została zaimportowana.')}}catch(err){alert('Nie udało się odczytać kopii. Wybierz prawidłowy plik JSON z aplikacji.')}e.target.value=''});
@@ -241,7 +217,7 @@ function showTab(which){
  $('budgetTab').classList.toggle('hidden',isBenefit||isLoans);
  $('benefitTab').classList.toggle('hidden',!isBenefit);
  $('loansTab').classList.toggle('hidden',!isLoans);
- $('budgetTabBtn').classList.toggle('active',which==='budget');
+ $('budgetTabBtn').classList.toggle('active',!isBenefit&&!isLoans);
  $('benefitTabBtn').classList.toggle('active',isBenefit);
  $('loansTabBtn').classList.toggle('active',isLoans);
 }
@@ -259,7 +235,7 @@ $('benefitForm').addEventListener('submit',e=>{
  const entry={date,amount:Math.round(amount*100)/100,description};
  if(editingBenefitIndex!==null && p.benefitEntries[editingBenefitIndex]) p.benefitEntries[editingBenefitIndex]=entry;
  else p.benefitEntries.push(entry);
- editingBenefitIndex=null; if(!saveState()) return; $('benefitAmount').value=''; $('benefitDescription').value=''; $('benefitSubmit').textContent='Dodaj wpis'; render();
+ editingBenefitIndex=null; saveState(); $('benefitAmount').value=''; $('benefitDescription').value=''; $('benefitSubmit').textContent='Dodaj wpis'; render();
 });
 $('benefitCancel').addEventListener('click',()=>{editingBenefitIndex=null;$('benefitAmount').value='';$('benefitDescription').value='';$('benefitSubmit').textContent='Dodaj wpis';});
 $('benefitHistoryBody').addEventListener('click',e=>{
@@ -268,73 +244,30 @@ $('benefitHistoryBody').addEventListener('click',e=>{
  if(del){const i=Number(del.dataset.benefitDelete),entry=p.benefitEntries[i];if(entry&&confirm(`Usunąć wpis 800+ z ${fmtDate(parseISO(entry.date))}?`)){p.benefitEntries.splice(i,1);if(editingBenefitIndex===i)editingBenefitIndex=null;saveState();render();}}
 });
 let editingLoanId=null;
-function dateAddMonths(isoDate,months){
- const d=parseISO(isoDate), day=d.getDate();d.setDate(1);d.setMonth(d.getMonth()+months);
- const last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();d.setDate(Math.min(day,last));return iso(d);
-}
-function dateLabel(s){return parseISO(s).toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'})}
-function loanRemaining(x){return Math.max(0,Math.round(((Number(x.originalAmount??x.balance)||0)-(Number(x.paidCount)||0)*(Number(x.payment)||0))*100)/100);}
 function renderLoans(){
- const loans=state.loans||[];
- const remaining=loanRemaining;
- $('loanDebtTotal').textContent=money(loans.reduce((sum,x)=>sum+remaining(x),0));
- $('loanMonthlyTotal').textContent=money(loans.filter(x=>remaining(x)>0).reduce((sum,x)=>sum+(Number(x.payment)||0),0));
- $('loanCount').textContent=String(loans.filter(x=>remaining(x)>0).length);
+ const loans=(state.loans||[]);
+ $('loanDebtTotal').textContent=money(loans.reduce((s,x)=>s+(Number(x.balance)||0),0));
+ $('loanMonthlyTotal').textContent=money(loans.reduce((s,x)=>s+(Number(x.payment)||0),0));
+ $('loanCount').textContent=String(loans.length);
  const body=$('loanHistoryBody');
- if(!loans.length){body.innerHTML='<tr><td colspan="6" class="empty">Nie dodano jeszcze żadnych zobowiązań.</td></tr>'}
- else body.innerHTML=loans.map((x,i)=>{
-   const paid=Number(x.paidCount)||0,total=Number(x.totalCount)||0,balance=remaining(x);
-   const progress=total?Math.min(100,paid/total*100):0;
-   return `<tr><td>${escapeHTML(x.name)}${x.note?`<small style="display:block;color:var(--muted)">${escapeHTML(x.note)}</small>`:''}</td><td class="money">${money(x.payment)}</td><td class="money">${paid}${total?` / ${total}`:''}</td><td class="money">${money(balance)}</td><td>${total?`<div class="loan-progress"><span style="width:${progress}%"></span></div><small>${Math.round(progress)}%</small>`:'—'}</td><td class="row-actions"><button class="iconbtn" data-loan-edit="${i}">Edytuj</button> <button class="iconbtn" data-loan-delete="${i}">Usuń</button></td></tr>`;
- }).join('');
- const events=[];
- loans.forEach((x,i)=>{
-  if(remaining(x)<=0||!x.firstDue) return;
-  for(let n=0;n<6;n++){
-   const due=dateAddMonths(x.firstDue,n);
-   events.push({i,n,due,name:x.name,payment:Math.min(Number(x.payment)||0,remaining(x)),paid:(x.paidDates||[]).includes(due)});
-  }
- });
- events.sort((a,b)=>a.due.localeCompare(b.due)||a.name.localeCompare(b.name));
- const cal=$('loanCalendar');
- if(!events.length){cal.innerHTML='<div class="empty">Brak nadchodzących rat. Dodaj zobowiązanie lub sprawdź, czy wszystkie są spłacone.</div>';return}
- const groups={};events.forEach(e=>(groups[e.due]??=[]).push(e));
- cal.innerHTML=Object.entries(groups).map(([due,list])=>`<div class="loan-date-group"><div class="loan-date-head">${dateLabel(due)}</div>${list.map(e=>`<div class="loan-event"><label><input type="checkbox" data-loan-paid="${e.i}" data-loan-due="${e.due}" ${e.paid?'checked':''}><span><strong>${escapeHTML(e.name)}</strong><small>${e.paid?'Rata oznaczona jako spłacona':'Zaznacz po opłaceniu'}</small></span></label><span class="event-amount">${money(e.payment)}</span></div>`).join('')}</div>`).join('');
+ if(!loans.length){body.innerHTML='<tr><td colspan="6" class="empty">Nie dodano jeszcze żadnych rat.</td></tr>';return}
+ body.innerHTML=loans.map((x,i)=>`<tr><td>${escapeHTML(x.name)}</td><td class="money">${money(x.balance)}</td><td class="money">${money(x.payment)}</td><td>${x.dueDay?escapeHTML(x.dueDay):'—'}</td><td>${escapeHTML(x.note||'—')}</td><td class="row-actions"><button class="iconbtn" data-loan-edit="${i}">Edytuj</button><button class="iconbtn" data-loan-delete="${i}">×</button></td></tr>`).join('');
 }
 $('loanForm').addEventListener('submit',e=>{
  e.preventDefault();
- const name=$('loanName').value.trim(),originalAmount=Number($('loanBalance').value),payment=Number($('loanPayment').value),paidCount=Math.max(0,Math.floor(Number($('loanPaidCount').value)||0)),totalRaw=$('loanTotalCount').value,totalCount=totalRaw?Math.max(1,Math.floor(Number(totalRaw))):0,firstDue=$('loanFirstDue').value,note=$('loanNote').value.trim();
- if(!name||!Number.isFinite(originalAmount)||originalAmount<=0||!Number.isFinite(payment)||payment<=0||!firstDue){alert('Sprawdź nazwę, saldo, kwotę raty i datę najbliższej raty.');return}
- if(totalCount&&paidCount>totalCount){alert('Liczba spłaconych rat nie może być większa od łącznej liczby rat.');return}
- const item={name,originalAmount:Math.round(originalAmount*100)/100,payment:Math.round(payment*100)/100,paidCount,totalCount,firstDue,note,paidDates:[]};
- if(editingLoanId!==null&&state.loans[editingLoanId]){
-   const old=state.loans[editingLoanId]; item.paidDates=old.paidDates||[];
-   if(!$('loanPaidCount').value && old.paidCount) item.paidCount=old.paidCount;
-   state.loans[editingLoanId]=item;
- }else state.loans.push(item);
- editingLoanId=null;saveState();$('loanForm').reset();$('loanFirstDue').value=iso(new Date());$('loanSubmit').textContent='Dodaj zobowiązanie';renderLoans();
+ const name=$('loanName').value.trim(), balance=Number($('loanBalance').value), payment=Number($('loanPayment').value), dueRaw=$('loanDueDay').value, dueDay=dueRaw?Number(dueRaw):null, note=$('loanNote').value.trim();
+ if(!name||!Number.isFinite(balance)||balance<0||!Number.isFinite(payment)||payment<0){alert('Sprawdź nazwę, saldo i wysokość raty.');return}
+ if(dueDay!==null&&(!Number.isInteger(dueDay)||dueDay<1||dueDay>31)){alert('Dzień płatności musi być liczbą od 1 do 31.');return}
+ const item={name,balance:Math.round(balance*100)/100,payment:Math.round(payment*100)/100,dueDay,note};
+ if(editingLoanId!==null&&state.loans[editingLoanId])state.loans[editingLoanId]=item;else state.loans.push(item);
+ editingLoanId=null;saveState();$('loanForm').reset();$('loanSubmit').textContent='Dodaj zobowiązanie';renderLoans();
 });
-$('loanCancel').addEventListener('click',()=>{editingLoanId=null;$('loanForm').reset();$('loanFirstDue').value=iso(new Date());$('loanSubmit').textContent='Dodaj zobowiązanie'});
+$('loanCancel').addEventListener('click',()=>{editingLoanId=null;$('loanForm').reset();$('loanSubmit').textContent='Dodaj zobowiązanie'});
 $('loanHistoryBody').addEventListener('click',e=>{
  const edit=e.target.closest('[data-loan-edit]'),del=e.target.closest('[data-loan-delete]');
- if(edit){editingLoanId=Number(edit.dataset.loanEdit);const x=state.loans[editingLoanId];if(!x)return;$('loanName').value=x.name;$('loanBalance').value=x.originalAmount??(Number(x.balance||0)+(Number(x.paidCount||0)*Number(x.payment||0)));$('loanPayment').value=x.payment;$('loanPaidCount').value=x.paidCount||0;$('loanTotalCount').value=x.totalCount||'';$('loanFirstDue').value=x.firstDue||iso(new Date());$('loanNote').value=x.note||'';$('loanSubmit').textContent='Zapisz zmiany';window.scrollTo({top:$('loanForm').getBoundingClientRect().top+window.scrollY-20,behavior:'smooth'});}
+ if(edit){editingLoanId=Number(edit.dataset.loanEdit);const x=state.loans[editingLoanId];if(!x)return;$('loanName').value=x.name;$('loanBalance').value=x.balance;$('loanPayment').value=x.payment;$('loanDueDay').value=x.dueDay||'';$('loanNote').value=x.note||'';$('loanSubmit').textContent='Zapisz zmiany';window.scrollTo({top:$('loanForm').getBoundingClientRect().top+window.scrollY-20,behavior:'smooth'});}
  if(del){const i=Number(del.dataset.loanDelete),x=state.loans[i];if(x&&confirm(`Usunąć zobowiązanie „${x.name}”?`)){state.loans.splice(i,1);if(editingLoanId===i)editingLoanId=null;saveState();renderLoans();}}
 });
-$('loanCalendar').addEventListener('change',e=>{
- const box=e.target.closest('[data-loan-paid]');if(!box)return;
- const i=Number(box.dataset.loanPaid),due=box.dataset.loanDue,x=state.loans[i];if(!x)return;
- x.paidDates=x.paidDates||[];
- if(box.checked){
-  if(Math.max(0,(Number(x.originalAmount??x.balance)||0)-(Number(x.paidCount)||0)*(Number(x.payment)||0))<=0){box.checked=false;return}
-  if(!confirm(`Oznaczyć ratę ${money(Math.min(Number(x.payment)||0,Math.max(0,(Number(x.originalAmount??x.balance)||0)-(Number(x.paidCount)||0)*(Number(x.payment)||0))))} dla „${x.name}” z dnia ${dateLabel(due)} jako spłaconą?`)){box.checked=false;return}
-  if(!x.paidDates.includes(due)){x.paidDates.push(due);x.paidCount=(Number(x.paidCount)||0)+1;}
- }else{
-  if(!confirm(`Cofnąć rozliczenie raty dla „${x.name}” z dnia ${dateLabel(due)}? Saldo i liczba spłaconych rat zostaną przywrócone.`)){box.checked=true;return}
-  if(x.paidDates.includes(due)){x.paidDates=x.paidDates.filter(d=>d!==due);x.paidCount=Math.max(0,(Number(x.paidCount)||0)-1);}
- }
- if(saveState())renderLoans();
-});
-$('loanFirstDue').value=iso(new Date());
 if('serviceWorker' in navigator && location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 render();
 renderLoans();
