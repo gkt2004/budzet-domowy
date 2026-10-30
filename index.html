@@ -253,6 +253,7 @@ function loanOriginal(x){if(x.originalAmount!==undefined)return Number(x.origina
 function loanPaidCount(x){return Math.max(0,Math.floor(Number(x.paidCount)||0));}
 function loanBalance(x){return Math.max(0,Math.round((loanOriginal(x)-loanPaidCount(x)*(Number(x.payment)||0))*100)/100);}
 function nextLoanDueDate(x){
+ if(x.nextDueDate){const saved=parseISO(x.nextDueDate);if(!Number.isNaN(saved.getTime()))return saved;}
  if(!x.dueDay)return null;
  const now=new Date(); now.setHours(0,0,0,0);
  for(let add=0;add<24;add++){
@@ -263,6 +264,9 @@ function nextLoanDueDate(x){
  }
  return null;
 }
+function isoDate(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function followingDueDate(d,day){const nextMonth=new Date(d.getFullYear(),d.getMonth()+1,1,12);const actualDay=Math.min(Number(day)||d.getDate(),new Date(nextMonth.getFullYear(),nextMonth.getMonth()+1,0).getDate());return new Date(nextMonth.getFullYear(),nextMonth.getMonth(),actualDay,12);}
+function markLoanPaid(x){if(!x||loanBalance(x)<=0)return;const currentDue=nextLoanDueDate(x);x.originalAmount=loanOriginal(x);x.paidCount=loanPaidCount(x)+1;if(x.dueDay&&currentDue)x.nextDueDate=isoDate(followingDueDate(currentDue,x.dueDay));}
 function renderLoans(){
  const loans=(state.loans||[]);
  $('loanDebtTotal').textContent=money(loans.reduce((s,x)=>s+loanBalance(x),0));
@@ -282,13 +286,13 @@ $('loanForm').addEventListener('submit',e=>{
  if(!name||!Number.isFinite(originalAmount)||originalAmount<0||!Number.isFinite(payment)||payment<0||!Number.isInteger(paidCount)||paidCount<0){alert('Sprawdź nazwę, kwotę początkową, ratę i liczbę spłaconych rat.');return}
  if(dueDay!==null&&(!Number.isInteger(dueDay)||dueDay<1||dueDay>31)){alert('Dzień płatności musi być liczbą od 1 do 31.');return}
  const item={name,originalAmount:Math.round(originalAmount*100)/100,paidCount,payment:Math.round(payment*100)/100,dueDay,note};
- if(editingLoanId!==null&&state.loans[editingLoanId])state.loans[editingLoanId]=item;else state.loans.push(item);
+ if(editingLoanId!==null&&state.loans[editingLoanId]){if(state.loans[editingLoanId].nextDueDate)item.nextDueDate=state.loans[editingLoanId].nextDueDate;state.loans[editingLoanId]=item;}else state.loans.push(item);
  editingLoanId=null;saveState();$('loanForm').reset();$('loanPaidCount').value='0';$('loanSubmit').textContent='Dodaj zobowiązanie';renderLoans();
 });
 $('loanCancel').addEventListener('click',()=>{editingLoanId=null;$('loanForm').reset();$('loanPaidCount').value='0';$('loanSubmit').textContent='Dodaj zobowiązanie'});
 $('loanHistoryBody').addEventListener('click',e=>{
  const paid=e.target.closest('[data-loan-paid]'), edit=e.target.closest('[data-loan-edit]'),del=e.target.closest('[data-loan-delete]');
- if(paid){const i=Number(paid.dataset.loanPaid),x=state.loans[i];if(x&&loanBalance(x)>0){x.originalAmount=loanOriginal(x);x.paidCount=loanPaidCount(x)+1;saveState();renderLoans();}return;}
+ if(paid){const i=Number(paid.dataset.loanPaid),x=state.loans[i];if(x&&loanBalance(x)>0){markLoanPaid(x);saveState();renderLoans();}return;}
  if(edit){editingLoanId=Number(edit.dataset.loanEdit);const x=state.loans[editingLoanId];if(!x)return;$('loanName').value=x.name;$('loanOriginal').value=loanOriginal(x);$('loanPayment').value=x.payment;$('loanPaidCount').value=loanPaidCount(x);$('loanDueDay').value=x.dueDay||'';$('loanNote').value=x.note||'';$('loanSubmit').textContent='Zapisz zmiany';window.scrollTo({top:$('loanForm').getBoundingClientRect().top+window.scrollY-20,behavior:'smooth'});}
  if(del){const i=Number(del.dataset.loanDelete),x=state.loans[i];if(x&&confirm(`Usunąć zobowiązanie „${x.name}”?`)){state.loans.splice(i,1);if(editingLoanId===i)editingLoanId=null;saveState();renderLoans();}}
 });
@@ -296,7 +300,7 @@ $('upcomingLoansBody').addEventListener('click',e=>{
  const btn=e.target.closest('[data-upcoming-paid]');
  if(!btn)return;
  const i=Number(btn.dataset.upcomingPaid),x=state.loans[i];
- if(x&&loanBalance(x)>0){x.originalAmount=loanOriginal(x);x.paidCount=loanPaidCount(x)+1;saveState();renderLoans();}
+ if(x&&loanBalance(x)>0){markLoanPaid(x);saveState();renderLoans();}
 });
 if('serviceWorker' in navigator && location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 render();
