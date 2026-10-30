@@ -153,7 +153,10 @@ function loadState(){
   return {periods:{}};
  }catch(e){console.error('Nie udało się odczytać zapisanych danych budżetu:',e);return {periods:{}}}
 }
-function saveState(){localStorage.setItem(STORE,JSON.stringify(state))}
+function saveState(){
+ try { localStorage.setItem(STORE, JSON.stringify(state)); return true; }
+ catch (err) { console.error('Błąd zapisu danych:', err); alert('Nie udało się zapisać danych w pamięci przeglądarki. Sprawdź konsolę F12 → Console. Dane nie zostały potwierdzone jako zapisane.'); return false; }
+}
 function money(n){return new Intl.NumberFormat('pl-PL',{style:'currency',currency:'PLN'}).format(Number(n)||0)}
 function escapeHTML(value){return String(value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}
 function iso(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
@@ -228,8 +231,8 @@ function render(){
 }
 $('prevPeriod').addEventListener('click',()=>{offset--;render()});
 $('nextPeriod').addEventListener('click',()=>{offset++;render()});
-$('incomeForm').addEventListener('submit',e=>{e.preventDefault();const p=getPeriodData(currentKey());p.income1=Math.max(0,Number($('income1').value)||0);p.income2=Math.max(0,Number($('income2').value)||0);saveState();render()});
-$('expenseForm').addEventListener('submit',e=>{e.preventDefault();const date=$('expenseDate').value,amount=Number($('expenseAmount').value);const start=currentPeriod(),end=new Date(start.getFullYear(),start.getMonth()+1,9,12);if(!date||date<iso(start)||date>iso(end)){alert('Wybierz datę z aktualnie wybranego okresu.');return}if(!Number.isFinite(amount)||amount<0){alert('Wpisz poprawną kwotę.');return}const p=getPeriodData(currentKey());p.expenses[date]=Math.round(amount*100)/100;saveState();render()});
+$('incomeForm').addEventListener('submit',e=>{e.preventDefault();const p=getPeriodData(currentKey());p.income1=Math.max(0,Number($('income1').value)||0);p.income2=Math.max(0,Number($('income2').value)||0);if(saveState())render()});
+$('expenseForm').addEventListener('submit',e=>{e.preventDefault();const date=$('expenseDate').value,amount=Number($('expenseAmount').value);const start=currentPeriod(),end=new Date(start.getFullYear(),start.getMonth()+1,9,12);if(!date||date<iso(start)||date>iso(end)){alert('Wybierz datę z aktualnie wybranego okresu.');return}if(!Number.isFinite(amount)||amount<0){alert('Wpisz poprawną kwotę.');return}const p=getPeriodData(currentKey());p.expenses[date]=Math.round(amount*100)/100;if(saveState())render()});
 $('historyBody').addEventListener('click',e=>{const edit=e.target.closest('[data-edit]'),del=e.target.closest('[data-delete]');const p=getPeriodData(currentKey());if(edit){const d=edit.dataset.edit;$('expenseDate').value=d;$('expenseAmount').value=p.expenses[d];$('expenseAmount').focus();$('expenseSubmit').textContent='Zapisz zmianę';window.scrollTo({top:$('expenseForm').getBoundingClientRect().top+window.scrollY-20,behavior:'smooth'})}if(del){const d=del.dataset.delete;if(confirm(`Usunąć wpis z ${fmtDate(parseISO(d))}?`)){delete p.expenses[d];saveState();render()}}});
 $('exportBtn').addEventListener('click',()=>{const blob=new Blob([JSON.stringify({format:'budzet-domowy-v1',exportedAt:new Date().toISOString(),data:state},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`budzet-domowy-kopia-${iso(new Date())}.json`;a.click();URL.revokeObjectURL(a.href)});
 $('importFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const obj=JSON.parse(await f.text());const incoming=obj.data||obj;if(!incoming.periods||typeof incoming.periods!=='object')throw new Error('bad');if(confirm('Import zastąpi obecne dane w tej aplikacji. Kontynuować?')){state=incoming;saveState();offset=0;render();alert('Kopia została zaimportowana.')}}catch(err){alert('Nie udało się odczytać kopii. Wybierz prawidłowy plik JSON z aplikacji.')}e.target.value=''});
@@ -237,6 +240,10 @@ function showTab(which){
  const isBenefit=which==='benefit', isLoans=which==='loans';
  $('budgetTab').classList.toggle('hidden',isBenefit||isLoans);
  $('benefitTab').classList.toggle('hidden',!isBenefit);
+ $('loansTab').classList.toggle('hidden',!isLoans);
+ $('budgetTabBtn').classList.toggle('active',which==='budget');
+ $('benefitTabBtn').classList.toggle('active',isBenefit);
+ $('loansTabBtn').classList.toggle('active',isLoans);
 }
 $('budgetTabBtn').addEventListener('click',()=>showTab('budget'));
 $('benefitTabBtn').addEventListener('click',()=>showTab('benefit'));
@@ -252,7 +259,7 @@ $('benefitForm').addEventListener('submit',e=>{
  const entry={date,amount:Math.round(amount*100)/100,description};
  if(editingBenefitIndex!==null && p.benefitEntries[editingBenefitIndex]) p.benefitEntries[editingBenefitIndex]=entry;
  else p.benefitEntries.push(entry);
- editingBenefitIndex=null; saveState(); $('benefitAmount').value=''; $('benefitDescription').value=''; $('benefitSubmit').textContent='Dodaj wpis'; render();
+ editingBenefitIndex=null; if(!saveState()) return; $('benefitAmount').value=''; $('benefitDescription').value=''; $('benefitSubmit').textContent='Dodaj wpis'; render();
 });
 $('benefitCancel').addEventListener('click',()=>{editingBenefitIndex=null;$('benefitAmount').value='';$('benefitDescription').value='';$('benefitSubmit').textContent='Dodaj wpis';});
 $('benefitHistoryBody').addEventListener('click',e=>{
@@ -325,7 +332,7 @@ $('loanCalendar').addEventListener('change',e=>{
   if(!confirm(`Cofnąć rozliczenie raty dla „${x.name}” z dnia ${dateLabel(due)}? Saldo i liczba spłaconych rat zostaną przywrócone.`)){box.checked=true;return}
   if(x.paidDates.includes(due)){x.paidDates=x.paidDates.filter(d=>d!==due);x.paidCount=Math.max(0,(Number(x.paidCount)||0)-1);}
  }
- saveState();renderLoans();
+ if(saveState())renderLoans();
 });
 $('loanFirstDue').value=iso(new Date());
 if('serviceWorker' in navigator && location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
