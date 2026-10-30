@@ -105,12 +105,13 @@
     <div class="card"><div class="metric-label">Liczba zobowiązań</div><div class="metric-value" id="loanCount">0</div><div class="metric-note">Zapisane pożyczki, kredyty i zakupy na raty</div></div>
   </section>
   <section class="section card">
-    <div class="section-head"><div><h2>Dodaj ratę / zobowiązanie</h2><div class="sub">Wpisz aktualną kwotę pozostałą do spłaty</div></div></div>
+    <div class="section-head"><div><h2>Dodaj ratę / zobowiązanie</h2><div class="sub">Podaj kwotę początkową i liczbę już spłaconych rat</div></div></div>
     <form id="loanForm">
       <div class="formgrid">
         <div class="field"><label for="loanName">Nazwa zobowiązania</label><input id="loanName" type="text" maxlength="100" placeholder="np. telewizor, kredyt, telefon" required></div>
-        <div class="field"><label for="loanBalance">Pozostało do spłaty (zł)</label><input id="loanBalance" type="number" min="0" step="0.01" inputmode="decimal" placeholder="np. 2400,00" required></div>
+        <div class="field"><label for="loanOriginal">Kwota początkowa (zł)</label><input id="loanOriginal" type="number" min="0" step="0.01" inputmode="decimal" placeholder="np. 10 000,00" required></div>
         <div class="field"><label for="loanPayment">Miesięczna rata (zł)</label><input id="loanPayment" type="number" min="0" step="0.01" inputmode="decimal" placeholder="np. 250,00" required></div>
+        <div class="field"><label for="loanPaidCount">Liczba spłaconych rat</label><input id="loanPaidCount" type="number" min="0" step="1" value="0" required></div>
         <div class="field"><label for="loanDueDay">Dzień płatności (opcjonalnie)</label><input id="loanDueDay" type="number" min="1" max="31" step="1" placeholder="np. 15"></div>
         <div class="field" style="grid-column:1/-1"><label for="loanNote">Uwagi (opcjonalnie)</label><input id="loanNote" type="text" maxlength="200" placeholder="np. ostatnia rata w czerwcu 2027"></div>
       </div>
@@ -119,9 +120,9 @@
   </section>
   <section class="section">
     <div class="section-head"><div><h2>Wszystkie raty do spłaty</h2><div class="sub">Możesz aktualizować saldo po każdej spłacie</div></div></div>
-    <div class="tablewrap"><table class="history"><thead><tr><th>Zobowiązanie</th><th class="money">Pozostało</th><th class="money">Rata / mies.</th><th>Dzień</th><th>Uwagi</th><th class="row-actions">Akcje</th></tr></thead><tbody id="loanHistoryBody"><tr><td colspan="6" class="empty">Nie dodano jeszcze żadnych rat.</td></tr></tbody></table></div>
+    <div class="tablewrap"><table class="history"><thead><tr><th>Zobowiązanie</th><th class="money">Kwota początkowa</th><th class="money">Pozostało do spłaty</th><th class="money">Rata / mies.</th><th>Spłacone raty</th><th>Dzień</th><th>Uwagi</th><th class="row-actions">Akcje</th></tr></thead><tbody id="loanHistoryBody"><tr><td colspan="8" class="empty">Nie dodano jeszcze żadnych rat.</td></tr></tbody></table></div>
   </section>
-  <div class="notice">Dane rat są zapisywane lokalnie w tej aplikacji i uwzględniane w kopii zapasowej. To rejestr zobowiązań — spłaty nie są automatycznie odejmowane od budżetu ani od salda rat. Po spłacie zaktualizuj pole „Pozostało do spłaty” albo usuń zobowiązanie.</div>
+  <div class="notice">Dane rat są zapisywane lokalnie i uwzględniane w kopii zapasowej. Kwota pozostała do spłaty jest liczona jako kwota początkowa minus suma spłaconych rat. Po opłaceniu raty użyj przycisku „Spłacono ratę”.</div>
 </div>
 <div class="footer">Budżet domowy · okres rozliczeniowy 10.–9. · zapis lokalny</div>
 </div>
@@ -244,28 +245,32 @@ $('benefitHistoryBody').addEventListener('click',e=>{
  if(del){const i=Number(del.dataset.benefitDelete),entry=p.benefitEntries[i];if(entry&&confirm(`Usunąć wpis 800+ z ${fmtDate(parseISO(entry.date))}?`)){p.benefitEntries.splice(i,1);if(editingBenefitIndex===i)editingBenefitIndex=null;saveState();render();}}
 });
 let editingLoanId=null;
+function loanOriginal(x){if(x.originalAmount!==undefined)return Number(x.originalAmount)||0;return (Number(x.balance)||0)+(Number(x.paidCount)||0)*(Number(x.payment)||0);}
+function loanPaidCount(x){return Math.max(0,Math.floor(Number(x.paidCount)||0));}
+function loanBalance(x){return Math.max(0,Math.round((loanOriginal(x)-loanPaidCount(x)*(Number(x.payment)||0))*100)/100);}
 function renderLoans(){
  const loans=(state.loans||[]);
- $('loanDebtTotal').textContent=money(loans.reduce((s,x)=>s+(Number(x.balance)||0),0));
+ $('loanDebtTotal').textContent=money(loans.reduce((s,x)=>s+loanBalance(x),0));
  $('loanMonthlyTotal').textContent=money(loans.reduce((s,x)=>s+(Number(x.payment)||0),0));
  $('loanCount').textContent=String(loans.length);
  const body=$('loanHistoryBody');
- if(!loans.length){body.innerHTML='<tr><td colspan="6" class="empty">Nie dodano jeszcze żadnych rat.</td></tr>';return}
- body.innerHTML=loans.map((x,i)=>`<tr><td>${escapeHTML(x.name)}</td><td class="money">${money(x.balance)}</td><td class="money">${money(x.payment)}</td><td>${x.dueDay?escapeHTML(x.dueDay):'—'}</td><td>${escapeHTML(x.note||'—')}</td><td class="row-actions"><button class="iconbtn" data-loan-edit="${i}">Edytuj</button><button class="iconbtn" data-loan-delete="${i}">×</button></td></tr>`).join('');
+ if(!loans.length){body.innerHTML='<tr><td colspan="8" class="empty">Nie dodano jeszcze żadnych rat.</td></tr>';return}
+ body.innerHTML=loans.map((x,i)=>`<tr><td>${escapeHTML(x.name)}</td><td class="money">${money(loanOriginal(x))}</td><td class="money">${money(loanBalance(x))}</td><td class="money">${money(x.payment)}</td><td>${loanPaidCount(x)}</td><td>${x.dueDay?escapeHTML(x.dueDay):'—'}</td><td>${escapeHTML(x.note||'—')}</td><td class="row-actions"><button class="iconbtn" data-loan-paid="${i}" ${loanBalance(x)<=0?'disabled':''}>Spłacono ratę</button><button class="iconbtn" data-loan-edit="${i}">Edytuj</button><button class="iconbtn" data-loan-delete="${i}">×</button></td></tr>`).join('');
 }
 $('loanForm').addEventListener('submit',e=>{
  e.preventDefault();
- const name=$('loanName').value.trim(), balance=Number($('loanBalance').value), payment=Number($('loanPayment').value), dueRaw=$('loanDueDay').value, dueDay=dueRaw?Number(dueRaw):null, note=$('loanNote').value.trim();
- if(!name||!Number.isFinite(balance)||balance<0||!Number.isFinite(payment)||payment<0){alert('Sprawdź nazwę, saldo i wysokość raty.');return}
+ const name=$('loanName').value.trim(), originalAmount=Number($('loanOriginal').value), payment=Number($('loanPayment').value), paidCount=Number($('loanPaidCount').value), dueRaw=$('loanDueDay').value, dueDay=dueRaw?Number(dueRaw):null, note=$('loanNote').value.trim();
+ if(!name||!Number.isFinite(originalAmount)||originalAmount<0||!Number.isFinite(payment)||payment<0||!Number.isInteger(paidCount)||paidCount<0){alert('Sprawdź nazwę, kwotę początkową, ratę i liczbę spłaconych rat.');return}
  if(dueDay!==null&&(!Number.isInteger(dueDay)||dueDay<1||dueDay>31)){alert('Dzień płatności musi być liczbą od 1 do 31.');return}
- const item={name,balance:Math.round(balance*100)/100,payment:Math.round(payment*100)/100,dueDay,note};
+ const item={name,originalAmount:Math.round(originalAmount*100)/100,paidCount,payment:Math.round(payment*100)/100,dueDay,note};
  if(editingLoanId!==null&&state.loans[editingLoanId])state.loans[editingLoanId]=item;else state.loans.push(item);
- editingLoanId=null;saveState();$('loanForm').reset();$('loanSubmit').textContent='Dodaj zobowiązanie';renderLoans();
+ editingLoanId=null;saveState();$('loanForm').reset();$('loanPaidCount').value='0';$('loanSubmit').textContent='Dodaj zobowiązanie';renderLoans();
 });
-$('loanCancel').addEventListener('click',()=>{editingLoanId=null;$('loanForm').reset();$('loanSubmit').textContent='Dodaj zobowiązanie'});
+$('loanCancel').addEventListener('click',()=>{editingLoanId=null;$('loanForm').reset();$('loanPaidCount').value='0';$('loanSubmit').textContent='Dodaj zobowiązanie'});
 $('loanHistoryBody').addEventListener('click',e=>{
- const edit=e.target.closest('[data-loan-edit]'),del=e.target.closest('[data-loan-delete]');
- if(edit){editingLoanId=Number(edit.dataset.loanEdit);const x=state.loans[editingLoanId];if(!x)return;$('loanName').value=x.name;$('loanBalance').value=x.balance;$('loanPayment').value=x.payment;$('loanDueDay').value=x.dueDay||'';$('loanNote').value=x.note||'';$('loanSubmit').textContent='Zapisz zmiany';window.scrollTo({top:$('loanForm').getBoundingClientRect().top+window.scrollY-20,behavior:'smooth'});}
+ const paid=e.target.closest('[data-loan-paid]'), edit=e.target.closest('[data-loan-edit]'),del=e.target.closest('[data-loan-delete]');
+ if(paid){const i=Number(paid.dataset.loanPaid),x=state.loans[i];if(x&&loanBalance(x)>0){x.originalAmount=loanOriginal(x);x.paidCount=loanPaidCount(x)+1;saveState();renderLoans();}return;}
+ if(edit){editingLoanId=Number(edit.dataset.loanEdit);const x=state.loans[editingLoanId];if(!x)return;$('loanName').value=x.name;$('loanOriginal').value=loanOriginal(x);$('loanPayment').value=x.payment;$('loanPaidCount').value=loanPaidCount(x);$('loanDueDay').value=x.dueDay||'';$('loanNote').value=x.note||'';$('loanSubmit').textContent='Zapisz zmiany';window.scrollTo({top:$('loanForm').getBoundingClientRect().top+window.scrollY-20,behavior:'smooth'});}
  if(del){const i=Number(del.dataset.loanDelete),x=state.loans[i];if(x&&confirm(`Usunąć zobowiązanie „${x.name}”?`)){state.loans.splice(i,1);if(editingLoanId===i)editingLoanId=null;saveState();renderLoans();}}
 });
 if('serviceWorker' in navigator && location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
