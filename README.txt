@@ -1,30 +1,16 @@
-BUDŻET DOMOWY — instrukcja
+BUDŻET DOMOWY — PEŁNA PACZKA Z ZAKŁADKĄ BUKMACHERKA
 
-Pliki:
-- index.html — aplikacja
-- manifest.json — ustawienia instalacji PWA
-- sw.js — pamięć podręczna/offline
+Zawartość do wgrania do katalogu głównego repozytorium GitHub Pages:
+- index.html — aplikacja z zakładką Bukmacherka
+- manifest.json — konfiguracja instalacji PWA
+- sw.js — pamięć podręczna z nową wersją, aby pobrać aktualizację
+- icons/icon-192.png oraz icons/icon-512.png — ikony instalacji
 
-NAJPROSTSZE TESTOWANIE:
-Otwórz index.html w przeglądarce na komputerze. Dane zapisują się lokalnie w tej przeglądarce.
+JAK WGRAC:
+1. Zrób eksport kopii JSON z obecnej aplikacji.
+2. Rozpakuj to archiwum na komputerze.
+3. W repozytorium https://github.com/gkt2004/budzet-domowy wgraj pliki z archiwum, zachowując strukturę folderów. Zastąp index.html, manifest.json i sw.js oraz wgraj folder icons.
+4. Zatwierdź zmiany przez Commit changes i poczekaj na zakończenie publikacji GitHub Pages.
+5. Otwórz stronę aplikacji i sprawdź zakładkę Bukmacherka.
 
-INSTALACJA NA ANDROIDZIE:
-Aplikację PWA można zainstalować z menu przeglądarki po opublikowaniu jej pod adresem HTTPS (np. GitHub Pages).
-1. Wgraj pliki z tego archiwum do nowego repozytorium GitHub.
-2. W repozytorium otwórz Settings > Pages.
-3. W sekcji Build and deployment wybierz Deploy from a branch, gałąź main i folder /(root), następnie Save.
-4. Po opublikowaniu otwórz podany adres pages.github.io na telefonie z Androidem.
-5. W Chrome wybierz menu ⋮ > Dodaj do ekranu głównego / Zainstaluj aplikację.
-
-JAK DZIAŁA:
-- Okres rozliczeniowy od 10. do 9. dnia kolejnego miesiąca.
-- Dochód 1 przeznaczony na bieżące wydatki.
-- Dochód 2 odkładany w całości.
-- Jeden łączny wpis wydatków na dzień, z możliwością edycji/usunięcia.
-- Historia okresów i eksport/import kopii JSON.
-
-WAŻNE:
-Dane są lokalne dla przeglądarki/urządzenia. Nie są automatycznie synchronizowane między telefonem i komputerem. Wykonuj kopię przez przycisk „Eksportuj kopię”. Jeśli wyczyścisz dane przeglądarki, lokalna historia może zostać usunięta.
-
-
-Nowa funkcja: zakładka „Rozliczenie 800+” pozwala dodawać wpisy z datą, kwotą i opcjonalnym opisem. Wpisy są rozdzielone według okresu 10.–9., można je edytować i usuwać; suma jest liczona osobno od budżetu domowego.
+UWAGA: Aplikacja zapisuje dane w localStorage w danej przeglądarce/urządzeniu. Nie używaj opcji czyszczenia danych strony. Klucz zapisu pozostaje budzet-domowy-v1, a istniejące dane powinny pozostać na tym samym urządzeniu i w tej samej przeglądarce. Wykonaj kopię zapasową przed aktualizacją.
