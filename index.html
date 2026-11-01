@@ -29,6 +29,7 @@
   <button class="tabbtn active" id="budgetTabBtn" type="button">Budżet domowy</button>
   <button class="tabbtn" id="benefitTabBtn" type="button">Rozliczenie 800+</button>
   <button class="tabbtn" id="loansTabBtn" type="button">Moje raty</button>
+  <button class="tabbtn" id="bettingTabBtn" type="button">Bukmacherka</button>
 </nav>
 <div id="budgetTab">
 <section class="grid" aria-label="Podsumowanie">
@@ -128,6 +129,33 @@
   </section>
   <div class="notice">Dane rat są zapisywane lokalnie i uwzględniane w kopii zapasowej. Kwota pozostała do spłaty jest liczona jako kwota początkowa minus suma spłaconych rat. Po opłaceniu raty użyj przycisku „Spłacono ratę”.</div>
 </div>
+<div id="bettingTab" class="hidden">
+  <section class="section grid" style="margin-top:14px">
+    <div class="card"><div class="metric-label">Suma wpisów w tym miesiącu</div><div class="metric-value" id="bettingCurrentTotal">0,00 zł</div><div class="metric-note" id="bettingCurrentMonthLabel">Bieżący miesiąc</div></div>
+    <div class="card"><div class="metric-label">Suma wszystkich wpisów</div><div class="metric-value" id="bettingAllTotal">0,00 zł</div><div class="metric-note">Wszystkie zapisane kwoty</div></div>
+    <div class="card"><div class="metric-label">Liczba wpisów</div><div class="metric-value" id="bettingCount">0</div><div class="metric-note">Zapisane pozycje</div></div>
+  </section>
+  <section class="section card">
+    <div class="section-head"><div><h2>Dodaj wpis</h2><div class="sub">Zapisuj kwoty z datą. Każdy wpis jest liczony do statystyki miesiąca kalendarzowego.</div></div></div>
+    <form id="bettingForm" class="section">
+      <div class="formgrid">
+        <div class="field"><label for="bettingDate">Data</label><input id="bettingDate" type="date" required></div>
+        <div class="field"><label for="bettingAmount">Kwota (zł)</label><input id="bettingAmount" type="number" min="0" step="0.01" inputmode="decimal" placeholder="np. 50,00" required></div>
+        <div class="field" style="grid-column:1/-1"><label for="bettingDescription">Opis (opcjonalnie)</label><input id="bettingDescription" type="text" maxlength="160" placeholder="np. wpłata, wypłata, wynik dnia"></div>
+      </div>
+      <div class="actions"><button class="primary" id="bettingSubmit" type="submit">Dodaj wpis</button><button class="secondary hidden" id="bettingCancel" type="button">Anuluj edycję</button></div>
+    </form>
+  </section>
+  <section class="section">
+    <div class="section-head"><div><h2>Statystyka miesięczna</h2><div class="sub">Zbiorcza suma kwot według miesiąca kalendarzowego</div></div></div>
+    <div class="tablewrap"><table class="history"><thead><tr><th>Miesiąc</th><th class="money">Suma kwot</th><th class="money">Liczba wpisów</th><th class="money">Średnia na wpis</th></tr></thead><tbody id="bettingMonthlyBody"><tr><td colspan="4" class="empty">Brak wpisów.</td></tr></tbody></table></div>
+  </section>
+  <section class="section">
+    <div class="section-head"><div><h2>Historia wpisów</h2><div class="sub">Możesz edytować lub usuwać zapisane pozycje</div></div></div>
+    <div class="tablewrap"><table class="history"><thead><tr><th>Data</th><th>Opis</th><th class="money">Kwota</th><th class="row-actions">Akcje</th></tr></thead><tbody id="bettingHistoryBody"><tr><td colspan="4" class="empty">Brak wpisów.</td></tr></tbody></table></div>
+  </section>
+  <div class="notice">Wpisy w zakładce „Bukmacherka” są niezależne od budżetu domowego, 800+ i rat. Są zapisywane lokalnie w tej przeglądarce i trafiają do kopii zapasowej JSON.</div>
+</div>
 <div class="footer">Budżet domowy · okres rozliczeniowy 10.–9. · zapis lokalny</div>
 </div>
 <script>
@@ -135,6 +163,8 @@ const $ = id => document.getElementById(id);
 const STORE = 'budzet-domowy-v1';
 let state = loadState();
 if(!Array.isArray(state.loans)) state.loans=[];
+if(!Array.isArray(state.bettingEntries)) state.bettingEntries=[];
+let editingBettingIndex=null;
 let offset = 0;
 function loadState(){try{return JSON.parse(localStorage.getItem(STORE))||{periods:{}}}catch(e){return {periods:{}}}}
 function saveState(){localStorage.setItem(STORE,JSON.stringify(state))}
@@ -216,19 +246,23 @@ $('incomeForm').addEventListener('submit',e=>{e.preventDefault();const p=getPeri
 $('expenseForm').addEventListener('submit',e=>{e.preventDefault();const date=$('expenseDate').value,amount=Number($('expenseAmount').value);const start=currentPeriod(),end=new Date(start.getFullYear(),start.getMonth()+1,9,12);if(!date||date<iso(start)||date>iso(end)){alert('Wybierz datę z aktualnie wybranego okresu.');return}if(!Number.isFinite(amount)||amount<0){alert('Wpisz poprawną kwotę.');return}const p=getPeriodData(currentKey());p.expenses[date]=Math.round(amount*100)/100;saveState();render()});
 $('historyBody').addEventListener('click',e=>{const edit=e.target.closest('[data-edit]'),del=e.target.closest('[data-delete]');const p=getPeriodData(currentKey());if(edit){const d=edit.dataset.edit;$('expenseDate').value=d;$('expenseAmount').value=p.expenses[d];$('expenseAmount').focus();$('expenseSubmit').textContent='Zapisz zmianę';window.scrollTo({top:$('expenseForm').getBoundingClientRect().top+window.scrollY-20,behavior:'smooth'})}if(del){const d=del.dataset.delete;if(confirm(`Usunąć wpis z ${fmtDate(parseISO(d))}?`)){delete p.expenses[d];saveState();render()}}});
 $('exportBtn').addEventListener('click',()=>{const blob=new Blob([JSON.stringify({format:'budzet-domowy-v1',exportedAt:new Date().toISOString(),data:state},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`budzet-domowy-kopia-${iso(new Date())}.json`;a.click();URL.revokeObjectURL(a.href)});
-$('importFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const obj=JSON.parse(await f.text());const incoming=obj.data||obj;if(!incoming.periods||typeof incoming.periods!=='object')throw new Error('bad');if(confirm('Import zastąpi obecne dane w tej aplikacji. Kontynuować?')){state=incoming;saveState();offset=0;render();alert('Kopia została zaimportowana.')}}catch(err){alert('Nie udało się odczytać kopii. Wybierz prawidłowy plik JSON z aplikacji.')}e.target.value=''});
+$('importFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const obj=JSON.parse(await f.text());const incoming=obj.data||obj;if(!incoming.periods||typeof incoming.periods!=='object')throw new Error('bad');if(confirm('Import zastąpi obecne dane w tej aplikacji. Kontynuować?')){state=incoming;if(!Array.isArray(state.loans))state.loans=[];if(!Array.isArray(state.bettingEntries))state.bettingEntries=[];saveState();offset=0;render();renderLoans();renderBetting();alert('Kopia została zaimportowana.')}}catch(err){alert('Nie udało się odczytać kopii. Wybierz prawidłowy plik JSON z aplikacji.')}e.target.value=''});
 function showTab(which){
- const isBenefit=which==='benefit', isLoans=which==='loans';
- $('budgetTab').classList.toggle('hidden',isBenefit||isLoans);
+ const isBenefit=which==='benefit', isLoans=which==='loans', isBetting=which==='betting';
+ $('budgetTab').classList.toggle('hidden',isBenefit||isLoans||isBetting);
  $('benefitTab').classList.toggle('hidden',!isBenefit);
  $('loansTab').classList.toggle('hidden',!isLoans);
- $('budgetTabBtn').classList.toggle('active',!isBenefit&&!isLoans);
+ $('bettingTab').classList.toggle('hidden',!isBetting);
+ $('budgetTabBtn').classList.toggle('active',!isBenefit&&!isLoans&&!isBetting);
  $('benefitTabBtn').classList.toggle('active',isBenefit);
  $('loansTabBtn').classList.toggle('active',isLoans);
+ $('bettingTabBtn').classList.toggle('active',isBetting);
+ if(isBetting) renderBetting();
 }
 $('budgetTabBtn').addEventListener('click',()=>showTab('budget'));
 $('benefitTabBtn').addEventListener('click',()=>showTab('benefit'));
 $('loansTabBtn').addEventListener('click',()=>showTab('loans'));
+$('bettingTabBtn').addEventListener('click',()=>showTab('betting'));
 let editingBenefitIndex=null;
 $('benefitForm').addEventListener('submit',e=>{
  e.preventDefault();
@@ -303,6 +337,36 @@ $('upcomingLoansBody').addEventListener('click',e=>{
  if(x&&loanBalance(x)>0){markLoanPaid(x);saveState();renderLoans();}
 });
 if('serviceWorker' in navigator && location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+function bettingMonthKey(date){return String(date||'').slice(0,7)}
+function bettingMonthLabel(key){const [y,m]=key.split('-').map(Number);return new Intl.DateTimeFormat('pl-PL',{month:'long',year:'numeric'}).format(new Date(y,m-1,1,12))}
+function renderBetting(){
+ const entries=(state.bettingEntries||[]).map((entry,index)=>({...entry,_index:index}));
+ const now=new Date(),thisMonth=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+ const currentTotal=entries.filter(x=>bettingMonthKey(x.date)===thisMonth).reduce((sum,x)=>sum+(Number(x.amount)||0),0);
+ const allTotal=entries.reduce((sum,x)=>sum+(Number(x.amount)||0),0);
+ $('bettingCurrentTotal').textContent=money(currentTotal);$('bettingCurrentMonthLabel').textContent=bettingMonthLabel(thisMonth);
+ $('bettingAllTotal').textContent=money(allTotal);$('bettingCount').textContent=String(entries.length);
+ if(!$('bettingDate').value)$('bettingDate').value=iso(new Date());
+ const groups={};
+ entries.forEach(x=>{const k=bettingMonthKey(x.date);if(!k)return;if(!groups[k])groups[k]={total:0,count:0};groups[k].total+=Number(x.amount)||0;groups[k].count++});
+ const months=Object.keys(groups).sort((a,b)=>b.localeCompare(a));
+ $('bettingMonthlyBody').innerHTML=months.length?months.map(k=>`<tr><td>${escapeHTML(bettingMonthLabel(k))}</td><td class="money">${money(groups[k].total)}</td><td class="money">${groups[k].count}</td><td class="money">${money(groups[k].total/groups[k].count)}</td></tr>`).join(''):'<tr><td colspan="4" class="empty">Brak wpisów.</td></tr>';
+ entries.sort((a,b)=>String(b.date).localeCompare(String(a.date))||b._index-a._index);
+ $('bettingHistoryBody').innerHTML=entries.length?entries.map(x=>`<tr><td>${fmtDate(parseISO(x.date))}</td><td>${escapeHTML(x.description||'—')}</td><td class="money">${money(x.amount)}</td><td class="row-actions"><button class="iconbtn" data-betting-edit="${x._index}">Edytuj</button><button class="iconbtn" data-betting-delete="${x._index}">×</button></td></tr>`).join(''):'<tr><td colspan="4" class="empty">Brak wpisów.</td></tr>';
+}
+$('bettingForm').addEventListener('submit',e=>{
+ e.preventDefault();const date=$('bettingDate').value,amount=Number($('bettingAmount').value),description=$('bettingDescription').value.trim();
+ if(!date||!Number.isFinite(amount)||amount<0){alert('Wpisz poprawną datę i kwotę.');return}
+ const entry={date,amount:Math.round(amount*100)/100,description};
+ if(editingBettingIndex!==null&&state.bettingEntries[editingBettingIndex])state.bettingEntries[editingBettingIndex]=entry;else state.bettingEntries.push(entry);
+ editingBettingIndex=null;saveState();$('bettingAmount').value='';$('bettingDescription').value='';$('bettingSubmit').textContent='Dodaj wpis';$('bettingCancel').classList.add('hidden');renderBetting();
+});
+$('bettingCancel').addEventListener('click',()=>{editingBettingIndex=null;$('bettingAmount').value='';$('bettingDescription').value='';$('bettingSubmit').textContent='Dodaj wpis';$('bettingCancel').classList.add('hidden')});
+$('bettingHistoryBody').addEventListener('click',e=>{
+ const edit=e.target.closest('[data-betting-edit]'),del=e.target.closest('[data-betting-delete]');
+ if(edit){editingBettingIndex=Number(edit.dataset.bettingEdit);const x=state.bettingEntries[editingBettingIndex];if(!x)return;$('bettingDate').value=x.date;$('bettingAmount').value=x.amount;$('bettingDescription').value=x.description||'';$('bettingSubmit').textContent='Zapisz zmianę';$('bettingCancel').classList.remove('hidden');$('bettingAmount').focus();window.scrollTo({top:$('bettingForm').getBoundingClientRect().top+window.scrollY-20,behavior:'smooth'})}
+ if(del){const i=Number(del.dataset.bettingDelete),x=state.bettingEntries[i];if(x&&confirm(`Usunąć wpis z ${fmtDate(parseISO(x.date))}?`)){state.bettingEntries.splice(i,1);if(editingBettingIndex===i)editingBettingIndex=null;saveState();renderBetting()}}
+});
 render();
 renderLoans();
 </script>
