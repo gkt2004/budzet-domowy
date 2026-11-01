@@ -266,7 +266,7 @@ function nextLoanDueDate(x){
 }
 function isoDate(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 function followingDueDate(d,day){const nextMonth=new Date(d.getFullYear(),d.getMonth()+1,1,12);const actualDay=Math.min(Number(day)||d.getDate(),new Date(nextMonth.getFullYear(),nextMonth.getMonth()+1,0).getDate());return new Date(nextMonth.getFullYear(),nextMonth.getMonth(),actualDay,12);}
-function markLoanPaid(x){if(!x||loanBalance(x)<=0)return;const currentDue=nextLoanDueDate(x);x.originalAmount=loanOriginal(x);x.paidCount=loanPaidCount(x)+1;if(x.dueDay&&currentDue)x.nextDueDate=isoDate(followingDueDate(currentDue,x.dueDay));}
+function markLoanPaid(x){if(!x||loanBalance(x)<=0)return;const currentDue=nextLoanDueDate(x);x.originalAmount=loanOriginal(x);x.paidCount=loanPaidCount(x)+1;if(x.dueDay&&currentDue){const nextDue=followingDueDate(currentDue,x.dueDay);x.nextDueDate=isoDate(nextDue);}}
 function renderLoans(){
  const loans=(state.loans||[]);
  $('loanDebtTotal').textContent=money(loans.reduce((s,x)=>s+loanBalance(x),0));
